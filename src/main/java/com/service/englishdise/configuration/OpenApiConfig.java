@@ -31,9 +31,9 @@ public class OpenApiConfig {
                                                 .bearerFormat("JWT")
                                 )
                 )
-                .info(new Info().title("LIBRARY API")
+                .info(new Info().title("ENGLISHDISE API")
                         .version(version)
                         .description(description)
-                        .license(new License().name("LIBRARY API Licence")));
+                        .license(new License().name("ENGLISHDISE API Licence")));
     }
 }
