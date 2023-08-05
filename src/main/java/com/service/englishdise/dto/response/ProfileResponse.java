@@ -21,4 +21,5 @@ public class ProfileResponse {
     private Gender gender;
     private int age;
     private Country country;
+    private Long userId;
 }

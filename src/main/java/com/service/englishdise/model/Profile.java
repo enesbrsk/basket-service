@@ -33,4 +33,5 @@ public class Profile extends BaseEntity{
     private int age;
     @Enumerated(EnumType.STRING)
     private Country country;
+    private Long userId;
 }

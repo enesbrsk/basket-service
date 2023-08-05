@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProfileMapper {
 
-    public static Profile toProfile(ProfileRequest request) {
+    public static Profile toProfile(ProfileRequest request,Long userId) {
         Profile profile = Profile.builder()
                 .name(request.getName())
                 .aboutMe(request.getAboutMe())
@@ -18,6 +18,7 @@ public class ProfileMapper {
                 .gender(request.getGender())
                 .age(request.getAge())
                 .country(request.getCountry())
+                .userId(userId)
                 .build();
 
         return profile;
@@ -33,6 +34,7 @@ public class ProfileMapper {
                 .gender(request.getGender())
                 .age(request.getAge())
                 .country(request.getCountry())
+                .userId(request.getUserId())
                 .build();
 
         return profileResponse;
