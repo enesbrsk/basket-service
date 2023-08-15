@@ -5,11 +5,9 @@ import com.service.englishdise.dto.response.ProfileResponse;
 import com.service.englishdise.enums.MatchStatus;
 import com.service.englishdise.model.Matcher;
 import com.service.englishdise.repository.MatcherRepository;
-import com.service.englishdise.repository.ProfileRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class MatcherService {
@@ -29,8 +27,6 @@ public class MatcherService {
         UserDto userDto = userService.findUserInContext();
         final List<Matcher> pendingMatches = matcherRepository.findByMatchedUserIdAndMatchStatus(userDto.getId(),MatchStatus.PENDING);
 
-        getProfileWithoutAccepted();
-
         if (!pendingMatches.isEmpty()){
             for (Matcher match : pendingMatches){
                 if (match.getUserId().equals(matchedUserId)){
@@ -38,7 +34,7 @@ public class MatcherService {
                     matcherRepository.save(match);
                     this.acceptedMatch(userDto.getId(),matchedUserId);
 
-                    return profileService.getProfileById(matchedUserId);
+                    return profileService.getProfileByUserId(matchedUserId);
                 }
             }
         }
@@ -52,7 +48,7 @@ public class MatcherService {
             return null;
     }
 
-    public List<ProfileResponse> getProfileWithoutAccepted(){
+    public List<ProfileResponse> getFindMatch(){
         UserDto userDto = userService.findUserInContext();
 
         List<ProfileResponse> profileResponseList = profileService.getAllProfileNotUserId();
@@ -65,9 +61,17 @@ public class MatcherService {
         return profileResponseList.stream()
                 .filter(profile -> !matcherIds.contains(profile.getUserId()))
                 .toList();
+    }
 
+    public List<ProfileResponse> getAcceptedMatch(){
 
+        UserDto userDto = userService.findUserInContext();
+        List<Matcher> acceptedMatches = matcherRepository.findByUserIdAndMatchStatus(userDto.getId(),MatchStatus.ACCEPTED);
+        List<Long> matcherIds = acceptedMatches.stream()
+                .map(Matcher::getMatchedUserId)
+                .toList();
 
+        return profileService.getAllProfileById(matcherIds);
     }
 
     private void acceptedMatch(Long userId,Long matchedUserId){

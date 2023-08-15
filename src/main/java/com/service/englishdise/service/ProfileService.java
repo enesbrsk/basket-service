@@ -50,10 +50,19 @@ public class ProfileService {
                 .collect(Collectors.toList());
     }
 
-    public List<ProfileResponse> getProfileById(Long id) {
-        return profileRepository.findById(id).stream()
+    public List<ProfileResponse> getProfileByUserId(Long id) {
+        return profileRepository.findByUserId(id).stream()
                 .map(ProfileMapper::toProfileResponse)
                 .collect(Collectors.toList());
+
+    }
+
+    public List<ProfileResponse> getAllProfileById(List<Long> ids){
+        var data = profileRepository.findByUserIdIn(ids).stream()
+                .map(ProfileMapper::toProfileResponse)
+                .collect(Collectors.toList());
+
+        return data;
     }
 
 
