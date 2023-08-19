@@ -44,7 +44,6 @@ public class MatcherService {
                     .matchStatus(MatchStatus.PENDING)
                     .build();
             matcherRepository.save(matcher);
-
             return null;
     }
 
@@ -82,6 +81,5 @@ public class MatcherService {
                 .build();
         matcherRepository.save(matcher);
     }
-
-
+    
 }
