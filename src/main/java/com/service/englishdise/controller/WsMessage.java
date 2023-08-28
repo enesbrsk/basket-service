@@ -4,6 +4,15 @@ public class WsMessage {
 
     private String sender;
     private String message;
+    private String reciever;
+
+    public String getReciever() {
+        return reciever;
+    }
+
+    public void setReciever(String reciever) {
+        this.reciever = reciever;
+    }
 
     public String getSender() {
         return sender;

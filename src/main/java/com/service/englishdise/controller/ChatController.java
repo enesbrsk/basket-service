@@ -30,20 +30,17 @@ public class ChatController {
 
     @GetMapping("/test")
     public String chatPage() {
-        return "tester"; // chat.html sayfasını döndürüyoruz
+        return "chater"; // chat.html sayfasını döndürüyoruz
     }
 
 
-    @MessageMapping("/chat")
-    @SendTo("/topic")
-    @SendToUser()
+    @MessageMapping("/private")
     public void chatEndpoint(@Payload WsMessage wsMessage) {
-        String sender = "enes"; // Gönderen kullanıcının adını al
-        String receiver = "kanber"; // Alıcının adını al
 
-        String userDestination = "/user/" + receiver + "/queue/messages";
-        System.out.println(wsMessage.getMessage());
-        messagingTemplate.convertAndSendToUser(receiver, userDestination, wsMessage);
+        messagingTemplate.convertAndSendToUser(wsMessage.getReciever(),
+                "/specific", wsMessage);
+
+
 
     }
 }

@@ -8,6 +8,7 @@
         var stompClient = null;
         var baseAddress = 'http://localhost:8080';
         var from = "";
+        var reciever = "";
 
         function setConnected(connected) {
             document.getElementById('connect').disabled = connected;
@@ -16,22 +17,20 @@
             document.getElementById('response').innerHTML = '';
         }
 
+
         function connect() {
-            var socket = new SockJS(baseAddress + '/chat');
+            console.log(document.getElementById('from').value)
+            var socket = new SockJS('/chat');
             stompClient = Stomp.over(socket);
-            stompClient.connect({}, function(frame) {
+            stompClient.connect({}, function (frame) {
                 setConnected(true);
                 console.log('Connected: ' + frame);
-
-                // Kullanıcı adını alın (örneğin, burada kullanıcı adını bir değişkende saklayın)
-                var username = document.getElementById('from').value; // Bu değeri istediğiniz gibi güncelleyin
-
-                stompClient.subscribe('/user/kanber' + '/queue/messages', function (message) {
+                stompClient.subscribe('/user/' +document.getElementById('from').value +'/specific', function (message) {
+                    console.log(message.body)
                     handleReceivedMessage(JSON.parse(message.body));
                 });
             });
         }
-
 
         function disconnect() {
             if(stompClient != null) {
@@ -43,12 +42,14 @@
 
         function sendMessage() {
             from = document.getElementById('from').value;
+            reciever = document.getElementById('reciever').value;
             var text = document.getElementById('text').value;
-            stompClient.send('/user/kanber'  + '/queue/messages', {},
-                JSON.stringify({'sender':from, 'message':text}));
+            stompClient.send("/app/private", {},
+                JSON.stringify({'reciever':reciever,'sender':from, 'message':text}));
         }
 
         function handleReceivedMessage(message) {
+            console.log("handled" + message)
             var response = document.getElementById('response');
             var p = document.createElement('p');
             p.style.wordWrap = 'break-word';
@@ -72,6 +73,8 @@
     <br />
     <div id="conversationDiv">
         <input type="text" id="text" placeholder="Mesaj.."/>
+        <input type="text" id="reciever" placeholder="Alıcı.."/>
+
         <button id="sendMessage" onclick="sendMessage();">Send</button>
         <p id="response"></p>
     </div>
