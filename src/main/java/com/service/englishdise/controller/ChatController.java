@@ -3,43 +3,47 @@ package com.service.englishdise.controller;
 import com.service.englishdise.model.Message;
 import com.service.englishdise.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.messaging.simp.annotation.SendToUser;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.security.Principal;
 import java.util.List;
 
-@RestController
+@Controller
 public class ChatController {
+
+    @Autowired
     private SimpMessagingTemplate messagingTemplate;
     private final ChatService chatService;
 
     @Autowired
     public ChatController( ChatService chatService) {
-
         this.chatService = chatService;
     }
 
-    @MessageMapping("/init")
-    @SendTo("/queue/init")
-    public List<Message> initializeChat(Message message, Principal principal) {
-        String sender = principal.getName();
-        String receiver = message.getReceiver();
-
-        return chatService.getConversation(sender, receiver);
+    @GetMapping("/test")
+    public String chatPage() {
+        return "tester"; // chat.html sayfasını döndürüyoruz
     }
 
+
     @MessageMapping("/chat")
-    @SendTo("/topic/messages")
-    public void sendMessage(Message message, Principal principal) {
-        String sender = principal.getName();
-        String receiver = message.getReceiver();
+    @SendTo("/topic")
+    @SendToUser()
+    public void chatEndpoint(@Payload WsMessage wsMessage) {
+        String sender = "enes"; // Gönderen kullanıcının adını al
+        String receiver = "kanber"; // Alıcının adını al
 
-        chatService.addMessage(sender, receiver, message);
+        String userDestination = "/user/" + receiver + "/queue/messages";
+        System.out.println(wsMessage.getMessage());
+        messagingTemplate.convertAndSendToUser(receiver, userDestination, wsMessage);
 
-        messagingTemplate.convertAndSendToUser(receiver, "/queue/messages", message);
     }
 }

@@ -43,9 +43,10 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .headers().frameOptions().disable().and()
+                .cors().disable()
                 .csrf().disable()
-                .cors().and()
                 .authorizeRequests(auth -> {
+                    auth.antMatchers("/chat/**/**").permitAll();
                     auth.antMatchers("/api/admin").hasAuthority("ADMIN");
                     auth.antMatchers("/api/user").hasAnyAuthority("ADMIN", "USER");
                     auth.anyRequest().authenticated();
@@ -63,7 +64,7 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().antMatchers("/api/public", "/h2-console/**", "/api/auth/login", "/api/auth/signup", "/**");
+        return (web) -> web.ignoring().antMatchers("/api/public", "/h2-console/**", "/api/auth/login", "/api/auth/signup", "/test/**", "/chat/**");
     }
 
     @Bean
