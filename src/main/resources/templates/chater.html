@@ -19,14 +19,38 @@
 
 
         function connect() {
-            console.log(document.getElementById('from').value)
+            setConnected(true);
+
+            fetch("http://localhost:8080/api/getHistory", {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({'receiver':'kanber','sender':'enes'}),
+                cache: 'default'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json(); // JSON formatında veriyi çekiyoruz
+                })
+                .then(data => {
+                    for (i = 0;i<data.length;i++){
+                        handleReceivedMessage(data[i])
+                    }
+
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                });
+
             var socket = new SockJS('/chat');
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function (frame) {
-                setConnected(true);
                 console.log('Connected: ' + frame);
                 stompClient.subscribe('/user/' +document.getElementById('from').value +'/specific', function (message) {
-                    console.log(message.body)
                     handleReceivedMessage(JSON.parse(message.body));
                 });
             });
@@ -45,15 +69,14 @@
             reciever = document.getElementById('reciever').value;
             var text = document.getElementById('text').value;
             stompClient.send("/app/private", {},
-                JSON.stringify({'reciever':reciever,'sender':from, 'message':text}));
+                JSON.stringify({'receiver':reciever,'sender':from, 'content':text}));
         }
 
         function handleReceivedMessage(message) {
-            console.log("handled" + message)
             var response = document.getElementById('response');
             var p = document.createElement('p');
             p.style.wordWrap = 'break-word';
-            p.appendChild(document.createTextNode(message.sender + ": " + message.message ));
+            p.appendChild(document.createTextNode(message.sender + ": " + message.receiver + " : " + message.content));
             response.appendChild(p);
         }
     </script>

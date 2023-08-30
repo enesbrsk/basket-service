@@ -46,8 +46,6 @@ public class SecurityConfig {
                 .cors().disable()
                 .csrf().disable()
                 .authorizeRequests(auth -> {
-                    auth.antMatchers("/chat/**/**").permitAll();
-                    auth.antMatchers("/queue/**").permitAll();
                     auth.antMatchers("/api/admin").hasAuthority("ADMIN");
                     auth.antMatchers("/api/user").hasAnyAuthority("ADMIN", "USER");
                     auth.anyRequest().authenticated();
@@ -65,7 +63,7 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().antMatchers("/api/public", "/h2-console/**", "/api/auth/login", "/api/auth/signup", "/test/**", "/chat/**","/queue/**");
+        return (web) -> web.ignoring().antMatchers("/**","/api/public", "/h2-console/**", "/api/auth/login", "/api/auth/signup", "/test/**", "/chat/**","/queue/**");
     }
 
     @Bean

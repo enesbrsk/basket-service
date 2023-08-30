@@ -10,4 +10,5 @@ import lombok.Setter;
 public class MessageRequest {
     private String content;
     private String receiver;
+    private String sender;
 }
