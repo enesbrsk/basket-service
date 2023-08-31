@@ -35,6 +35,7 @@ public class ProfileMapper {
                 .age(request.getAge())
                 .country(request.getCountry())
                 .userId(request.getUserId())
+                .feedbackList(request.getFeedbackList())
                 .build();
 
         return profileResponse;

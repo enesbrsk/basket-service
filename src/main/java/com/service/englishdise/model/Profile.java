@@ -8,10 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,4 +31,7 @@ public class Profile extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private Country country;
     private Long userId;
+
+    @OneToMany(mappedBy = "profile",cascade = CascadeType.ALL)
+    private List<Feedback> feedbackList;
 }

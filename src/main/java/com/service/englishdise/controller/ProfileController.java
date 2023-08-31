@@ -27,4 +27,5 @@ public class ProfileController {
     private ResponseEntity<List<ProfileResponse>> getAllProfile(){
         return ResponseEntity.ok(profileService.getAllProfile());
     }
+
 }
