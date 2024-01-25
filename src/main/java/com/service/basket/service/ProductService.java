@@ -44,6 +44,10 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    public Product getProductByBarcodeId(String barcodeId){
+        return productRepository.findByBarcodeId(barcodeId).orElseThrow(notFoundProduct(HttpStatus.NOT_FOUND));
+    }
+
 
     private static Supplier<GenericException> notFoundProduct(HttpStatus notFound) {
         return () -> GenericException.builder().httpStatus(notFound).errorMessage("Product not found!").build();
