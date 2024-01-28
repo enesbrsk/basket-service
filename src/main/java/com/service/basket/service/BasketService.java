@@ -1,5 +1,6 @@
 package com.service.basket.service;
 
+import com.service.basket.dto.UserDto;
 import com.service.basket.dto.request.BasketRequest;
 import com.service.basket.exception.GenericException;
 import com.service.basket.model.Basket;
@@ -16,14 +17,18 @@ public class BasketService {
 
     private final BasketRepository basketRepository;
     private final ProductService productService;
+    private final UserService userService;
 
-    public BasketService(BasketRepository basketRepository, ProductService productService) {
+    public BasketService(BasketRepository basketRepository, ProductService productService, UserService userService) {
         this.basketRepository = basketRepository;
         this.productService = productService;
+        this.userService = userService;
     }
 
-    public List<Basket> getAllBasket() {
-        return basketRepository.findAll();
+    public List<Basket> getAllBasketByUserId() {
+        UserDto userDto = userService.findUserInContext();
+
+        return basketRepository.findByUserId(userDto.getId());
     }
 
     public Basket getBasketById(Long id) {
@@ -31,27 +36,48 @@ public class BasketService {
     }
 
     public Basket createBasket(BasketRequest basketRequest) {
-        Product product = productService.getProductByBarcodeId(basketRequest.barcodeId());
-        Basket basket = new Basket();
-        Basket.builder()
-                .brand(product.getBrand())
-                .productName(basket.getProductName())
-                .quantity(1)
-                .totalPrice(product.getPrice())
-                .build();
+        Product product = productService.getProductByBarcodeId(basketRequest.getBarcodeId());
+        UserDto userDto = userService.findUserInContext();
+
+        Basket basket = basketRepository.findByBarcodeIdAndUserId(basketRequest.getBarcodeId(),userDto.getId());
+        if (basket == null){
+
+            basket = Basket.builder()
+                    .userId(userDto.getId())
+                    .brand(product.getBrand())
+                    .productName(product.getProductName())
+                    .quantity(1)
+                    .totalPrice(product.getPrice())
+                    .barcodeId(basketRequest.getBarcodeId())
+                    .build();
+
+        }else{
+            basket = Basket.builder()
+                    .quantity(basket.getQuantity()+1)
+                    .totalPrice(basket.getTotalPrice()+product.getPrice())
+                    .build();
+        }
 
         return basketRepository.save(basket);
     }
 
-    public Boolean removeProductFromBasket(Long id){
+    public Boolean removeProductFromBasket(String barcodeId){
 
-        Basket basket = getBasketById(id);
+        UserDto userDto = userService.findUserInContext();
+        Basket basket = basketRepository.findByBarcodeIdAndUserId(barcodeId,userDto.getId());
+        Product product = productService.getProductByBarcodeId(barcodeId);
 
-        if (basket.getQuantity() < 1){
-            notFoundProduct(HttpStatus.NOT_FOUND);
+        if (basket.getQuantity().equals(1)){
+            basketRepository.deleteByBarcodeIdAndUserId(barcodeId,userDto.getId());
+        }else{
+            basket = Basket.builder()
+                    .quantity(basket.getQuantity()-1)
+                    .totalPrice(basket.getTotalPrice()-product.getPrice())
+                    .build();
+
+            basketRepository.save(basket);
         }
 
-        basketRepository.deleteById(id);
         return true;
     }
 

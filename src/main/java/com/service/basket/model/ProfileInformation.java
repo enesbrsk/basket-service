@@ -1,24 +1,25 @@
 package com.service.basket.model;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Basket extends BaseEntity{
+public class ProfileInformation extends BaseEntity{
 
     private Long userId;
-    private String barcodeId;
-    private String brand;
-    private String productName;
-    private double totalPrice;
-    private Integer quantity;
+    private String moneyPoint;
+    private LocalDateTime lastOperationDate;
+    private String lastOperationLocation;
+    private Double lastOperationTotalPrice;
 
 }

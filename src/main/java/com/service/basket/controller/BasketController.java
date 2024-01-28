@@ -21,16 +21,16 @@ public class BasketController {
 
     @GetMapping
     public ResponseEntity<List<Basket>> getAllBasket() {
-        return ResponseEntity.ok(basketService.getAllBasket());
+        return ResponseEntity.ok(basketService.getAllBasketByUserId());
     }
 
     @PostMapping
-    public ResponseEntity<Basket> createBasket(BasketRequest basketRequest) {
+    public ResponseEntity<Basket> createBasket(@RequestBody BasketRequest basketRequest) {
         return ResponseEntity.ok(basketService.createBasket(basketRequest));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> removeProductFromBasket(@PathVariable Long id) {
+    public ResponseEntity<Boolean> removeProductFromBasket(@PathVariable String id) {
         return ResponseEntity.ok(basketService.removeProductFromBasket(id));
     }
 

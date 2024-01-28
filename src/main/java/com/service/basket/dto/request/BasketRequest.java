@@ -1,4 +1,15 @@
 package com.service.basket.dto.request;
 
-public record BasketRequest(String barcodeId) {
+import lombok.*;
+import org.springframework.stereotype.Service;
+
+@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class BasketRequest {
+
+    private String barcodeId;
+
 }
